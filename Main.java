@@ -13,7 +13,7 @@ public class Main {
         String url = "http://59.52.99.99:800/";//链接要以/结尾
         String user = "19338754";//账号（手机号）
         String password = "12345";//密码
-        String mac = "4ce59c7c9d4f3";//物理地址
+        String mac = "4ce59c7c9d4f3";//物理地址（可不填）
         String acIp = "";//交流IP可不填
 
         String sb = url + "eportal/portal/login?" +
