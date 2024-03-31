@@ -1,42 +1,32 @@
+package SchoolWIFI;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.InetAddress;
-import java.net.URL;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.nio.charset.StandardCharsets;
 
 public class Main {
-    public static void main(String[] args) throws UnknownHostException {
-        String url = "http://59.52.99.99:800/";//链接要以/结尾
-        String user = "19338754";//账号（手机号）
-        String password = "12345";//密码
-        String mac = "4ce59c7c9d4f3";//物理地址（可不填）
-        String acIp = "";//交流IP可不填
-
-        String sb = url + "eportal/portal/login?" +
-                "callback=liejiu&login_method=1&user_account=" +
-                user +
-                "%40telecom&user_password=" +
-                password +
-                "&wlan_user_ip=" +
-                getIp() +
-                "&wlan_user_ipv6=&wlan_user_mac=" +
-                mac +
-                "&wlan_ac_ip=" +
-                acIp +
-                "&wlan_ac_name=&jsVersion=4.2.1&terminal_type=1&lang=zh-cn&v=&lang=zh";
-        String getStr = doGet(sb);
-        System.out.println(getStr);
-    }
-
-
-    public static String getIp() throws UnknownHostException {
+    public static void main(String[] args) throws Exception {
+        WIFIParameter para = new WIFIParameter("http://59.52.20.94:801/","19314674105","197355");
+        if(!para.getUrl().startsWith("http://")&&para.getUrl().isEmpty()){
+            System.out.println("传入的url有误，请标准格式");
+            return;
+        }
         InetAddress addr = InetAddress.getLocalHost();
-        return addr.getHostAddress();
+        StringBuilder url = new StringBuilder(para.getUrl());
+        url.append("eportal/portal/login?callback=liejiu&login_method=1&user_account=");
+        url.append(para.getUser());
+        url.append("%40telecom&user_password=");
+        url.append(para.getPassword());
+        url.append("&wlan_user_ip=");
+        url.append(addr.getHostAddress());
+        String rt =doGet(url.toString());
+        rt = getSubString(rt,"liejiu(",");");
+        System.out.println(rt);
     }
+
 
     public static String doGet(String pathUrl){
         BufferedReader br = null;
@@ -83,7 +73,6 @@ public class Main {
             while ((str = br.readLine()) != null){
                 result.append(str);
             }
-            System.out.println(result);
             //关闭流
             is.close();
             //断开连接，disconnect是在底层tcp socket链接空闲时才切断，如果正在被其他线程使用就不切断。
@@ -101,4 +90,34 @@ public class Main {
         }
         return result.toString();
     }
+
+    /**
+     * 取两个文本之间的文本值
+     * @param text 源文本 比如：欲取全文本为 12345
+     * @param left 文本前面
+     * @param right  后面文本
+     * @return 返回 String
+     */
+    public static String getSubString(String text, String left, String right) {
+        String result;
+        int zLen;
+        if (left == null || left.isEmpty()) {
+            zLen = 0;
+        } else {
+            zLen = text.indexOf(left);
+            if (zLen > -1) {
+                zLen += left.length();
+            } else {
+                zLen = 0;
+            }
+        }
+        int yLen = text.indexOf(right, zLen);
+        if (yLen < 0 || right == null || right.isEmpty()) {
+            yLen = text.length();
+        }
+        result = text.substring(zLen, yLen);
+        return result;
+    }
+
+
 }
