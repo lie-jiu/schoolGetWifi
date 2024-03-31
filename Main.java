@@ -9,12 +9,13 @@ import java.nio.charset.StandardCharsets;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        WIFIParameter para = new WIFIParameter("http://59.52.20.94:801/","19314674105","197355");
-        if(!para.getUrl().startsWith("http://")&&para.getUrl().isEmpty()){
+        WIFIParameter para = new WIFIParameter("填登陆的网址","填账号","填密码");//加了判断，随便你要不要以“/”结尾
+        if(!para.getUrl().startsWith("http://")&&para.getUrl().isEmpty()){//检查是否以http开头且不为空
             System.out.println("传入的url有误，请标准格式");
             return;
         }
         InetAddress addr = InetAddress.getLocalHost();
+        //变成一串字符
         StringBuilder url = new StringBuilder(para.getUrl());
         url.append("eportal/portal/login?callback=liejiu&login_method=1&user_account=");
         url.append(para.getUser());
@@ -23,12 +24,13 @@ public class Main {
         url.append("&wlan_user_ip=");
         url.append(addr.getHostAddress());
         String rt =doGet(url.toString());
+        
         rt = getSubString(rt,"liejiu(",");");
         System.out.println(rt);
     }
 
 
-    public static String doGet(String pathUrl){
+    public static String doGet(String pathUrl){//发送登陆请求
         BufferedReader br = null;
         StringBuilder result = new StringBuilder();
         try {
@@ -98,7 +100,7 @@ public class Main {
      * @param right  后面文本
      * @return 返回 String
      */
-    public static String getSubString(String text, String left, String right) {
+    public static String getSubString(String text, String left, String right) {//获取网址返回的有效信息
         String result;
         int zLen;
         if (left == null || left.isEmpty()) {
