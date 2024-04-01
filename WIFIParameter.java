@@ -1,16 +1,24 @@
 package SchoolWIFI;
 
 public class WIFIParameter {
-    private String url;
+    private static String  url;
     private String user;
     private String password;
+
+    private String log;
 
     public WIFIParameter() {
     }
 
+
     public WIFIParameter(String url, String user, String password) {
         setUrl(url);
-        this.user = user;
+        setUser(user);
+        this.password = password;
+    }
+
+    public WIFIParameter(String user, String password) {
+        setUser(user);
         this.password = password;
     }
 
@@ -18,19 +26,19 @@ public class WIFIParameter {
      * 获取
      * @return url
      */
-    public String getUrl() {
+    public static String getUrl() {
         return url;
     }
 
     /**
      * 设置
-     * @param url
      */
-    public void setUrl(String url) {
-        if(!url.endsWith("/")){
-            url=url+"/";
+    public static void setUrl(String url) {
+        if(url.endsWith("/")) {
+            WIFIParameter.url = url;
+        }else {
+            WIFIParameter.url = url+"/";
         }
-        this.url = url;
     }
 
     /**
@@ -43,10 +51,13 @@ public class WIFIParameter {
 
     /**
      * 设置
-     * @param user
      */
     public void setUser(String user) {
-        this.user = user;
+        if(user.length()==11) {
+            this.user = user;
+        }else{
+            System.out.println("账号格式错误");
+        }
     }
 
     /**
@@ -59,13 +70,27 @@ public class WIFIParameter {
 
     /**
      * 设置
-     * @param password
      */
     public void setPassword(String password) {
         this.password = password;
     }
 
+    /**
+     * 获取
+     * @return log
+     */
+    public String getLog() {
+        return log;
+    }
+
+    /**
+     * 设置
+     */
+    public void setLog(String log) {
+        this.log = log;
+    }
+
     public String toString() {
-        return "wifi{url = " + url + ", user = " + user + ", password = " + password + "}";
+        return "WIFIParameter{url = " + url + ", user = " + user + ", password = " + password + ", log = " + log + "}";
     }
 }

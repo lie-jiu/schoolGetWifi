@@ -6,31 +6,53 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        WIFIParameter para = new WIFIParameter("填登陆的网址","填账号","填密码");//加了判断，随便你要不要以“/”结尾
-        if(!para.getUrl().startsWith("http://")&&para.getUrl().isEmpty()){//检查是否以http开头且不为空
-            System.out.println("传入的url有误，请标准格式");
+        boolean log = true;
+        WIFIParameter.setUrl("http://59.52.20.94:801/");//登陆网址
+
+        WIFIParameter[] para = new WIFIParameter[2];//有几个账号就写多少数字
+        //有几个账号就new几个变量
+        para[0]= new WIFIParameter("10086123423","123456");
+        para[1]= new WIFIParameter("19314674105","197355");
+
+        if (!WIFIParameter.getUrl().startsWith("http://") && WIFIParameter.getUrl().isEmpty()) {
+            System.out.println("网址错误");
             return;
         }
-        InetAddress addr = InetAddress.getLocalHost();
-        //变成一串字符
-        StringBuilder url = new StringBuilder(para.getUrl());
-        url.append("eportal/portal/login?callback=liejiu&login_method=1&user_account=");
-        url.append(para.getUser());
-        url.append("%40telecom&user_password=");
-        url.append(para.getPassword());
-        url.append("&wlan_user_ip=");
-        url.append(addr.getHostAddress());
-        String rt =doGet(url.toString());
-        
-        rt = getSubString(rt,"liejiu(",");");
-        System.out.println(rt);
+
+        for (WIFIParameter parameter : para) {
+
+            InetAddress addr = InetAddress.getLocalHost();
+            StringBuilder url = new StringBuilder(WIFIParameter.getUrl());
+            url.append("eportal/portal/login?callback=liejiu&login_method=1&user_account=");
+            url.append(parameter.getUser());
+            url.append("%40telecom&user_password=");
+            url.append(parameter.getPassword());
+            url.append("&wlan_user_ip=");
+            url.append(addr.getHostAddress());
+            String rt = doGet(url.toString());
+            rt = getSubString(rt, "liejiu(", ");");
+            parameter.setLog(rt);
+            if(log){
+                System.out.println(parameter.getLog());
+            }
+            if (rt.contains("已经在线")||rt.contains("成功")) {
+                System.out.println("登陆成功");
+                System.exit(1);
+            }else {
+                System.out.println("登陆失败");
+            }
+
+        }
+
+        System.exit(0);
     }
 
 
-    public static String doGet(String pathUrl){//发送登陆请求
+    public static String doGet(String pathUrl){
         BufferedReader br = null;
         StringBuilder result = new StringBuilder();
         try {
@@ -54,7 +76,7 @@ public class Main {
             conn.setDoInput(true);
 
             // Post请求不能使用缓存(get可以不使用)
-            conn.setUseCaches(false);
+            conn.setUseCaches(true);
 
             //设置通用的请求属性
             conn.setRequestProperty("accept", "*/*");
@@ -93,14 +115,7 @@ public class Main {
         return result.toString();
     }
 
-    /**
-     * 取两个文本之间的文本值
-     * @param text 源文本 比如：欲取全文本为 12345
-     * @param left 文本前面
-     * @param right  后面文本
-     * @return 返回 String
-     */
-    public static String getSubString(String text, String left, String right) {//获取网址返回的有效信息
+    public static String getSubString(String text, String left, String right) {//取中间
         String result;
         int zLen;
         if (left == null || left.isEmpty()) {
@@ -114,7 +129,7 @@ public class Main {
             }
         }
         int yLen = text.indexOf(right, zLen);
-        if (yLen < 0 || right == null || right.isEmpty()) {
+        if ((yLen < 0) || (right == null) || right.isEmpty()) {
             yLen = text.length();
         }
         result = text.substring(zLen, yLen);
