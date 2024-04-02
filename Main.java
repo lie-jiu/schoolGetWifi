@@ -6,17 +6,18 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
-import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        boolean log = true;
+        boolean log = true;//日志开关
+        long[] times = {0,0,0};//分别是天，小时，分钟。都为0则不注销
+
         WIFIParameter.setUrl("http://59.52.20.94:801/");//登陆网址
 
-        WIFIParameter[] para = new WIFIParameter[2];//有几个账号就写多少数字
+        WIFIParameter[] para = new WIFIParameter[1];//有几个账号就写多少数字
         //有几个账号就new几个变量
-        para[0]= new WIFIParameter("10086123423","123456");
-        para[1]= new WIFIParameter("19314674105","197355");
+        para[0]= new WIFIParameter("19314674105","197355");
 
         if (!WIFIParameter.getUrl().startsWith("http://") && WIFIParameter.getUrl().isEmpty()) {
             System.out.println("网址错误");
@@ -41,14 +42,12 @@ public class Main {
             }
             if (rt.contains("已经在线")||rt.contains("成功")) {
                 System.out.println("登陆成功");
-                System.exit(1);
+                signOut(times);
             }else {
                 System.out.println("登陆失败");
             }
 
         }
-
-        System.exit(0);
     }
 
 
@@ -79,7 +78,7 @@ public class Main {
             conn.setUseCaches(true);
 
             //设置通用的请求属性
-            conn.setRequestProperty("accept", "*/*");
+            conn.setRequestProperty("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7");
             conn.setRequestProperty("connection", "Keep-Alive");  //维持长链接
             conn.setRequestProperty("Content-Type", "application/javascript; charset=utf-8");
 
@@ -113,6 +112,18 @@ public class Main {
             }
         }
         return result.toString();
+    }
+
+    public static void signOut(long[] time) throws InterruptedException{
+        if(time[0]+time[1]+time[2]>0) {
+            TimeUnit.DAYS.sleep(time[0]);
+            TimeUnit.HOURS.sleep(time[1]);
+            TimeUnit.MINUTES.sleep(time[2]);
+
+            String str = doGet(WIFIParameter.getUrl() + "eportal/portal/logout");
+            System.out.println(getSubString(str, "jsonpReturn(", ");"));
+        }
+        System.exit(0);
     }
 
     public static String getSubString(String text, String left, String right) {//取中间
