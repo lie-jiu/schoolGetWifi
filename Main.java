@@ -13,11 +13,11 @@ public class Main {
         boolean log = true;//日志开关
         long[] times = {0,0,0};//分别是天，小时，分钟。都为0则不注销
 
-        WIFIParameter.setUrl("http://59.52.20.94:801/");//登陆网址
+        WIFIParameter.setUrl("http://43.65.20.23:801/");//登陆网址
 
         WIFIParameter[] para = new WIFIParameter[1];//有几个账号就写多少数字
         //有几个账号就new几个变量
-        para[0]= new WIFIParameter("19314674105","197355");
+        para[0]= new WIFIParameter("19374910523","696969");
 
         if (!WIFIParameter.getUrl().startsWith("http://") && WIFIParameter.getUrl().isEmpty()) {
             System.out.println("网址错误");
