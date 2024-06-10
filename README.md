@@ -12,5 +12,5 @@
 
 24年4月3日加入定时注销
 
-24年6月10日
+24年6月10日  登录API
 http://59.52.20.94:801/eportal/portal/login?callback=liejiu&user_account=这里填手机号%40telecom&user_password=这里填密码
